@@ -1,0 +1,131 @@
+---
+import { getCldImageUrl } from 'astro-cloudinary/helpers'
+import Layout from '../layouts/Layout.astro'
+
+const { searchParams } = Astro.url
+const id = searchParams.get('id')
+
+if (id == null) return Astro.redirect('/')
+const url = getCldImageUrl({ src: id })
+console.log(url)
+
+const title = '¡Mira esta increíble imagen generada!' // Título para compartir
+const description = 'Una imagen generada con efectos asombrosos'
+---
+
+<Layout title="Photos">
+	<head>
+		<meta name="description" content="Photos" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={url} id="twitter-image" />
+		<meta name="twitter:url" content={Astro.url.href} id="twitter-url" />
+
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={url} id="og-image" />
+		<meta property="og:url" content={Astro.url.href} id="og-url" />
+	</head>
+
+	<main class="flex min-h-screen flex-col items-center justify-center bg-neutral-800" data-id={id}>
+		<header class="bg-neutral-800 py-4">
+			<button class="bg-green-700 p-4 text-white" data-topic="ghost">Añade Fantasmas </button>
+			<button class="bg-green-700 p-4 text-white" data-topic="zombies">Añade Zombies</button>
+			<button class="bg-green-700 p-4 text-white" data-topic="devil">Añade Demonios</button>
+		</header>
+		<two-up>
+			<img src={url} alt="" id="original" class="aspect-auto h-[400px] rounded-xl" />
+			<img src={url} alt="" id="preview" class="aspect-auto h-[400px] rounded-xl" />
+		</two-up>
+
+		<div>
+			<button id="dowload" class="my-4 bg-black p-4 text-white">Dowload image</button>
+			<a
+				href=""
+				id="share"
+				class="my-4 bg-black p-4 text-white"
+				target="_blank"
+				rel="nofollow"
+				tabindex="0">Share</a
+			>
+		</div>
+	</main>
+</Layout>
+<style>
+	img {
+		transition: opacity 0.3s ease;
+	}
+</style>
+<script>
+	import 'two-up-element'
+	import { getCldImageUrl } from 'astro-cloudinary/helpers'
+
+	const id = document.querySelector('main')?.getAttribute('data-id') ?? ''
+	const preview = document.getElementById('preview') as HTMLImageElement
+	const buttons = document.querySelectorAll('button')
+	const dowloadButton = document.getElementById('dowload')
+	let btnShare = document.getElementById('share') as HTMLAnchorElement
+
+	const TOPICS: Record<string, string> = {
+		ghost: 'Add acary ghosts to the background',
+		zombies: 'Add zombies to the background',
+		devil: 'Add some demons to the background',
+		custom: ''
+	} as const
+
+	buttons.forEach((button) => {
+		button.addEventListener('click', (_e) => {
+			const topic = button.getAttribute('data-topic')
+			if (topic == null) return
+
+			const url = getCldImageUrl({
+				src: id,
+				replaceBackground: TOPICS[topic]
+			})
+			getSrcToShare(url)
+
+			preview.style.opacity = '.3'
+			preview.src = url
+			preview.onload = () => {
+				preview.style.opacity = '1'
+			}
+		})
+	})
+
+	dowloadButton?.addEventListener('click', (_e) => {
+		const url = getCldImageUrl({ src: id, format: 'avif' })
+		const a = document.createElement('a')
+		a.href = url
+		a.download = 'image.avif'
+		a.click()
+	})
+
+	function getSrcToShare(url: string) {
+		const tweetMessage = encodeURIComponent('¡Mira esta increíble imagen generada!')
+		const imageUrl = encodeURIComponent(url)
+
+		const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetMessage}&url=${imageUrl}`
+		// console.log(tweetUrl)
+		updateMetaTags(url)
+		btnShare.href = tweetUrl
+	}
+
+	function updateMetaTags(imageUrl: string) {
+		// Actualiza las etiquetas meta de Twitter
+		const twitterImageMeta = document.querySelector('meta[name="twitter:image"]')
+		const twitterUrlMeta = document.querySelector('meta[name="twitter:url"]')
+
+		console.log({ twitterImageMeta })
+
+		twitterImageMeta?.setAttribute('content', imageUrl)
+		twitterUrlMeta?.setAttribute('content', window.location.href)
+
+		const ogImageMeta = document.querySelector('meta[property="og:image"]')
+		const ogUrlMeta = document.querySelector('meta[property="og:url"]')
+
+		ogImageMeta?.setAttribute('content', imageUrl)
+		ogUrlMeta?.setAttribute('content', window.location.href)
+	}
+</script>
