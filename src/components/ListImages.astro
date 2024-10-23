@@ -3,6 +3,7 @@ import { CldImage } from 'astro-cloudinary'
 import { getCollection } from 'astro:content'
 
 const images = await getCollection('images')
+console.log(images)
 ---
 
 {
@@ -12,12 +13,10 @@ const images = await getCollection('images')
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				{images.map((image) => {
 					return (
-						<a href={`/photo?id=${image.data.public_id}`}>
+						<a href={`/photo?id=${image.data.public_id}`} class="h-full w-full">
 							<CldImage
 								src={image.data.public_id}
-								width={250}
-								height={250}
-								class="rounded-xl"
+								class="h-full w-full rounded-xl object-contain"
 								alt="img"
 							/>
 						</a>
