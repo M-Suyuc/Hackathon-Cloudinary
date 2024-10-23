@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jolly+Lodger&display=swap');
+
+:root {
+	--font: 'Jolly Lodger', system-ui;
+	--radial-color: radial-gradient(
+		52% 52% at 50% 50%,
+		hsl(202, 90%, 38%) 0%,
+		hsl(222, 100%, 6%) 100%
+	);
+}
+
+.font {
+	font-family: var(--font);
+	text-shadow: black;
+}
+
+.b {
+	border: solid red 0.1px;
+}
