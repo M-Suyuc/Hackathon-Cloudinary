@@ -1,0 +1,56 @@
+---
+import { CldImage } from 'astro-cloudinary'
+import { getCollection } from 'astro:content'
+
+const images = await getCollection('images')
+---
+
+<main
+	class="mx-auto flex min-h-screen max-w-screen-lg flex-col items-center justify-center gap-8 py-8 text-white"
+>
+	<h3 class="font text-6xl">My Pictures</h3>
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+		{
+			images.map((image) => {
+				return (
+					<a href={`/photo?id=${image.data.public_id}`}>
+						{/* crop={{
+              type: 'fill',
+              source: true
+            }} */}
+						{/* overlays={[
+                {
+                  position: {
+                    x: 140,
+                    y: 140,
+                    angle: -20,
+                    gravity: 'south_east'
+                  },
+                  text: {
+                    color: 'white',
+                    fontFamily: 'Source Sans Pro',
+                    fontSize: 300,
+                    fontWeight: 'black',
+                    text: 'Halloween'
+                  },
+                  effects: [
+                    {
+                      shear: '40:0',
+                      opacity: 50
+                    }
+                  ]
+                }
+              ]} */}
+						<CldImage
+							src={image.data.public_id}
+							width={250}
+							height={250}
+							class="rounded-xl"
+							alt="img"
+						/>
+					</a>
+				)
+			})
+		}
+	</div>
+</main>

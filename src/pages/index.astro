@@ -1,46 +1,65 @@
 ---
-import { getCollection } from 'astro:content'
 import Layout from '../layouts/Layout.astro'
-import { CldUploadWidget, CldImage } from 'astro-cloudinary'
-
-const images = await getCollection('images')
+import { CldUploadWidget } from 'astro-cloudinary'
 ---
 
 <Layout title="Cloudinary Hackathon">
-	<main class="flex min-h-screen flex-col items-center justify-center gap-8">
-		<CldUploadWidget
-			id="upload-widget"
-			uploadPreset="upload-unsinged-images-hackathon"
-			options={{
-				sources: ['local'],
-				multiple: false,
-				maxFiles: 1,
-				language: 'es',
-				styles: {}
-			}}
-		>
-			<button class="bg-blue-700 p-4 text-white">Upload image</button>
-		</CldUploadWidget>
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-			{
-				images.map((image) => {
-					return (
-						<a href={`/photo?id=${image.data.public_id}`}>
-							<CldImage
-								src={image.data.public_id}
-								width={250}
-								height={250}
-								crop={{
-									type: 'fill',
-									source: true
-								}}
-								alt="<Description>"
-							/>
-						</a>
-					)
-				})
-			}
-		</div>
+	<main class="h-screen overflow-hidden bg-black">
+		<section class="relative h-full bg-black">
+			<div class="radial relative grid h-full justify-center overflow-hidden">
+				<img src="./home-grass.png" class="absolute bottom-0 z-10 h-[50%] w-full" alt="" />
+				<img src="./home-moon.png" class="absolute bottom-8 w-full" alt="" />
+				<img
+					src="./home-point.png"
+					class="absolute left-0 top-0 h-full w-full object-cover object-center"
+					alt=""
+				/>
+				<img src="./home-pumpkin.png" class="absolute bottom-0" alt="" />
+				<img
+					src="./home-shadow.png"
+					class="absolute left-0 top-0 h-full w-full object-cover object-center mix-blend-overlay"
+					alt=""
+				/>
+				<img src="./home-stones.png" class="absolute bottom-0 h-full w-full" alt="" />
+				<img src="./home-trees.png" class="absolute h-full w-full" alt="" />
+			</div>
+			<div class="absolute top-10 w-full text-center">
+				<h1 class="font text-9xl text-slate-900">Halloween</h1>
+			</div>
+
+			<div class="absolute bottom-[3rem] z-40 flex w-full justify-center gap-8 border-l-indigo-700">
+				<!-- <CldUploadWidget
+					id="create-avatar"
+					uploadPreset="upload-unsinged-images-hackathon"
+					options={{
+						sources: ['local'],
+						multiple: false,
+						maxFiles: 1,
+						language: 'es'
+					}}
+				>
+					<button
+						class="font rounded-md border-b border-gray-500 bg-orange-600 px-4 py-1 font-sans text-4xl text-black transition-colors hover:text-white"
+						>Create Avatar</button
+					>
+				</CldUploadWidget> -->
+				<CldUploadWidget
+					id="upload-widget"
+					uploadPreset="upload-unsinged-images-hackathon"
+					options={{
+						sources: ['local'],
+						multiple: false,
+						maxFiles: 1,
+						language: 'es'
+					}}
+				>
+					<button
+						class="font rounded-md border-b border-gray-500 bg-orange-600 px-4 py-1 font-sans text-4xl text-black transition-colors hover:text-white"
+						>Create Memory</button
+					>
+				</CldUploadWidget>
+			</div>
+		</section>
 	</main>
 </Layout>
 
@@ -55,9 +74,26 @@ const images = await getCollection('images')
 			const publicId = e.detail.info.public_id
 			navigate(`/photo?id=${publicId}`)
 
-			console.log('clduploadwidget:success', e.detail)
+			// console.log('clduploadwidget:success', e.detail)
+		}) as EventListener)
+	}
+
+	const avatar = document.querySelector('#create-avatar')
+	if (avatar) {
+		avatar.addEventListener('clduploadwidget:success', ((
+			e: CustomEvent<{ info: { public_id: string } }>
+		) => {
+			const publicId = e.detail.info.public_id
+			navigate(`avatar/photo?id=${publicId}`)
 		}) as EventListener)
 	}
 </script>
 
-<style></style>
+<style>
+	.radial {
+		background: var(--radial-color);
+	}
+	.b {
+		border: solid red 0.1px;
+	}
+</style>
