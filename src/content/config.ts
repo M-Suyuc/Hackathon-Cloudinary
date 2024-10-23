@@ -3,7 +3,6 @@ import { defineCollection } from 'astro:content'
 
 const images = defineCollection({
 	loader: cldAssetsLoader({
-		limit: 4,
 		folder: 'hackathon'
 	})
 })
